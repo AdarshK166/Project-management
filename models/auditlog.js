@@ -1,39 +1,43 @@
-"use strict";
-const { Model } = require("sequelize");
-module.exports = (sequelize, DataTypes) => {
-  class AuditLog extends Model {
-    static associate(models) {
-      AuditLog.belongsTo(models.User, { foreignKey: "user_id" });
-    }
-  }
-  AuditLog.init(
-    {
-      user_id: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-          model: "Users",
-          key: "id",
-        },
-      },
-      action: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
-      entity: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
-      entity_id: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-      },
-      timestamp: DataTypes.DATE,
+const { Model, DataTypes } = require("sequelize");
+const sequelize = require("../config/database");
+
+class AuditLog extends Model {}
+
+AuditLog.init(
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
     },
-    {
-      sequelize,
-      modelName: "AuditLog",
-    }
-  );
-  return AuditLog;
-};
+    user_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    action: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    entity: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    entity_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    timestamp: {
+      type: DataTypes.DATE,
+      defaultValue: DataTypes.NOW,
+      allowNull: false,
+    },
+  },
+  {
+    sequelize,
+    modelName: "AuditLog",
+    tableName: "audit_logs",
+    timestamps: false,
+  }
+);
+
+module.exports = AuditLog;
